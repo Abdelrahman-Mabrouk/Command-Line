@@ -1,35 +1,35 @@
-# مشروع مفسر سطر الأوامر (CLI)
+# Command Line Interface (CLI) Project
 
-## نظرة عامة
-هذا المشروع ينفذ مفسر سطر أوامر (CLI) أساسي يشبه شل Unix/Linux باستخدام لغة Java. يدعم الأوامر الأساسية لإدارة الملفات والمجلدات والتنقل والعمليات المتقدمة.
+## Overview
+This project implements a basic Command Line Interface (CLI) similar to the Unix/Linux shell using Java. It supports essential commands for file and directory management, navigation, and advanced operations.
 
-## المميزات
-- **أوامر إدارة الملفات والمجلدات**:
-  - `mkdir`: إنشاء مجلد جديد.
-  - `rmdir`: حذف مجلد فارغ.
-  - `touch`: إنشاء ملف جديد.
-  - `mv`: نقل أو إعادة تسمية ملف.
-  - `rm`: حذف ملف.
+## Features
+- **File and Directory Commands**:
+  - `mkdir`: Create a new directory.
+  - `rmdir`: Remove an empty directory.
+  - `touch`: Create a new file.
+  - `mv`: Move or rename a file.
+  - `rm`: Delete a file.
 
-- **أوامر التنقل**:
-  - `pwd`: عرض المسار الحالي.
-  - `cd`: التنقل بين المجلدات.
-  - `ls`: عرض محتويات المجلد.
-  - `ls -a`: عرض جميع المحتويات بما في ذلك الملفات المخفية.
-  - `ls -r`: عرض المحتويات بترتيب عكسي.
+- **Navigation Commands**:
+  - `pwd`: Print the current working directory.
+  - `cd`: Change the current directory.
+  - `ls`: List directory contents.
+  - `ls -a`: List all contents, including hidden files.
+  - `ls -r`: List contents in reverse order.
 
-- **أوامر متقدمة**:
-  - `cat`: عرض محتويات ملف.
-  - `>`: إعادة توجيه المخرجات إلى ملف (كتابة).
-  - `>>`: إعادة توجيه المخرجات إلى ملف (إضافة).
-  - `|`: ربط المخرجات من أمر إلى آخر.
+- **Advanced Commands**:
+  - `cat`: Display the contents of a file.
+  - `>`: Redirect output to a file (overwrite).
+  - `>>`: Redirect output to a file (append).
+  - `|`: Pipe output from one command to another.
 
-- **أوامر داخلية**:
-  - `exit`: إنهاء مفسر سطر الأوامر.
-  - `help`: عرض قائمة بالأوامر المتاحة وكيفية استخدامها.
+- **Internal Commands**:
+  - `exit`: Exit the CLI.
+  - `help`: Display a list of available commands and how to use them.
 
-## التثبيت
-1. قم بنسخ المستودع:
+## Installation
+1. Clone the repository:
    ```bash
    git clone <repository-url>
    cd <repository-name>
