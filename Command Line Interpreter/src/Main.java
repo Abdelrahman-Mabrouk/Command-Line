@@ -7,7 +7,7 @@ public class Main {
         String Command;
         while (true) {
             Scanner input = new Scanner(System.in);
-            System.out.print("Enter command: ");
+            System.out.print("Enter command or 'quit' to exit: ");
             Command = input.nextLine();
             System.out.println(Cmd.execute(Command));
             if (Command.equals("quit")) {
