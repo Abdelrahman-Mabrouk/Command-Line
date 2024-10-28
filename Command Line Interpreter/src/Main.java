@@ -1,4 +1,5 @@
-import java.util.Objects;
+
+//  import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -11,8 +12,10 @@ public class Main {
             Command = input.nextLine();
             System.out.println(Cmd.execute(Command));
             if (Command.equals("quit")) {
+                input.close();
                 break;
             }
+            input.close();
         }
     }
 }

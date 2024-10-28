@@ -4,14 +4,14 @@ import java.io.File;
 public class CMD {
     private String command;
 
-    private void setCommand(String command) {
-        this.command = command;
+    private void setCommand(String c) {
+        command = c;
     }
 
     String execute(String command) {
         setCommand(command);
         switch (command) {
-            case "mkdir" :
+            case "mkdir":
                 return mkdir();
             case "rmdir":
                 return rmdir();
@@ -77,6 +77,7 @@ public class CMD {
         } else {
             System.out.println("The folder failed to be created or already exists.");
         }
+        scanner.close();
         return "Directory created successfully.";
     }
 
