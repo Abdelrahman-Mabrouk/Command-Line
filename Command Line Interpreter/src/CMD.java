@@ -9,7 +9,6 @@ public class CMD {
 
     String execute(String command) {
         setCommand(command);
-        do {
             switch (command) {
                 case "mkdir":
                     return mkdir();
@@ -47,7 +46,6 @@ public class CMD {
                     return "Unknown command";
             }
 
-        }while (!Objects.equals(command, "quit"));
     }
 
     private String lsr() {
