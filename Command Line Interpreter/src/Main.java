@@ -15,7 +15,6 @@ public class Main {
                 input.close();
                 break;
             }
-            input.close();
         }
     }
 }
