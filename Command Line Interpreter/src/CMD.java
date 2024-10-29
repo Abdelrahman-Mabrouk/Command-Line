@@ -66,40 +66,44 @@ public class CMD {
     }
 
     private String mkdir() {
+       command =  command.replaceFirst("^\\s+", "");
         if (command.length() <= 6) {
             return "Error: Command is not complete, please enter a folder name at next time.";
         }
         String[] nameFolder = command.split(" ");
-        for (int i = 1; i < nameFolder.length; i++) {
-            String nestedFolder,fatherFolder;
+        if (nameFolder.length > 1) {
+            for (int i = 1; i < nameFolder.length; i++) {
+                String nestedFolder, fatherFolder;
 
-            if (nameFolder[i].contains("/")) {
-                nestedFolder = nameFolder[i].substring(nameFolder[i].lastIndexOf("/") + 1);
-                fatherFolder = nameFolder[i].substring(0, nameFolder[i].lastIndexOf("/"));
-                File folder = new File(fatherFolder);
+                if (nameFolder[i].contains("/")) {
+                    nestedFolder = nameFolder[i].substring(nameFolder[i].lastIndexOf("/") + 1);
+                    fatherFolder = nameFolder[i].substring(0, nameFolder[i].lastIndexOf("/"));
+                    File folder = new File(fatherFolder);
 
-                if (folder.exists() && folder.isDirectory()) {
-                    folder = new File(fatherFolder,nestedFolder);
-                    if (!folder.mkdirs()) {
+                    if (folder.exists() && folder.isDirectory()) {
+                        folder = new File(fatherFolder, nestedFolder);
+                        if (!folder.mkdirs()) {
+                            System.out.println("The folder failed to be created or already exists.");
+                        } else {
+                            System.out.println("Directory created successfully.");
+                        }
+                    } else {
+                        System.out.println("The Father Folder does not exist.");
+                    }
+
+                } else {
+                    File folder = new File(nameFolder[i]);
+
+                    if (!folder.mkdir()) {
                         System.out.println("The folder failed to be created or already exists.");
                     } else {
                         System.out.println("Directory created successfully.");
                     }
                 }
-                else {
-                    System.out.println("The Father Folder does not exist.");
-                }
-
-            } else {
-                File folder = new File(nameFolder[i]);
-
-                if (!folder.mkdir()) {
-                    System.out.println("The folder failed to be created or already exists.");
-                }
-                else {
-                    System.out.println("Directory created successfully.");
-                }
             }
+        }
+        else {
+            System.out.println("Error: Command is not complete, please enter a folder name at next time.");
         }
             return "";
         }
