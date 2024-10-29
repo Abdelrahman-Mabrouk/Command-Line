@@ -1,10 +1,9 @@
-//import java.util.Scanner;
-
+package CmdPrograme;//import java.util.Scanner;
 import java.io.File;
 import java.io.IOException;
-
 public class CMD {
     private String command;
+    private String result;
 
     private void setCommand(String c) {
         command = c.replaceFirst("^\\s+", "");
@@ -14,7 +13,8 @@ public class CMD {
         if (nameFolders.length > 1) {
             return true;
         }
-        System.out.println("Error: Command is not complete, please enter a folder or file name at next time.");
+        result = "Error: Command is not complete, please enter a folder or file name at next time.";
+        System.out.println(result);
         return false;
     }
 
@@ -31,7 +31,7 @@ public class CMD {
         directory.delete();
     }
 
-    String execute(String command) {
+   public String execute(String command) {
         setCommand(command);
         if (command.contains("mkdir")) {
             return mkdir();
@@ -90,7 +90,7 @@ public class CMD {
     private String mkdir() {
         String[] nameFolders = command.split(" ");
         if (!isValidCommand(nameFolders)) {
-            return "";
+            return result;
         }
 
         for (int i = 1; i < nameFolders.length; i++) {
@@ -98,29 +98,31 @@ public class CMD {
 
             try {
                 if (folder.exists()) {
-                    return "Folder already exists: " + nameFolders[i];
+                    result = "Folder already exists: " + nameFolders[i];
+                    return result;
                 } else {
 
                     if (folder.mkdir()) {
-                        System.out.println("Directory created successfully: " + nameFolders[i]);
+                        result = "Directory created successfully: " + nameFolders[i];
+                        System.out.println(result);
                     } else {
-                        System.out.println("Error: Unable to create directory " + nameFolders[i]);
+                        result = "Error: Unable to create directory " + nameFolders[i];
+                        System.out.println(result);
                     }
                 }
             } catch (Exception e) {
-                // لمعالجة الأخطاء العامة
-                return "Error: An unexpected error occurred while creating directory " + nameFolders[i];
+                result = "Error: An unexpected error occurred while creating directory " + nameFolders[i];
+                return result;
             }
         }
 
-        return "";
+        return result;
     }
 
     private String rmdir() {
-
         String[] nameFolders = command.split(" ");
         if (!isValidCommand(nameFolders)) {
-            return "";
+            return result;
         }
 
         for (int i = 1; i < nameFolders.length; i++) {
@@ -129,15 +131,18 @@ public class CMD {
             if (folder.exists() && folder.isDirectory()) {
 
                 if (folder.delete()) {
-                    System.out.println("Directory removed successfully : " + nameFolders[i]);
+                    result = "Directory removed successfully : " + nameFolders[i];
+                    System.out.println(result);
                 } else {
-                    System.out.println("Error: The directory " + nameFolders[i] + " could not be removed. It may not be empty or you don't have permission.");
+                    result = "Error: The directory " + nameFolders[i] + " could not be removed. It may not be empty or you don't have permission.";
+                    System.out.println(result);
                 }
             } else {
-                System.out.println("Error: Directory does not exist : " + nameFolders[i]);
+                result = "Error: Directory does not exist : " + nameFolders[i];
+                System.out.println(result);
             }
         }
-        return "";
+        return result;
     }
 
 
@@ -145,22 +150,25 @@ public class CMD {
 
         String[] nameFiles = command.split(" ");
         if (!isValidCommand(nameFiles)) {
-            return "";
+            return result;
         }
 
         for (int i = 1; i < nameFiles.length; i++) {
             File file = new File(nameFiles[i]);
             try {
                 if (file.createNewFile()) {
-                    System.out.println("File created successfully: " + nameFiles[i]);
+                    result = "File created successfully: " + nameFiles[i];
+                    System.out.println(result);
                 } else {
-                    System.out.println("File already exists.");
+                    result = "File "+ nameFiles[i] +" already exists.";
+                    System.out.println(result);
                 }
             } catch (IOException e) {
-                System.out.println("Error: Unable to create " + nameFiles[i] + ". " + e.getMessage());
+                result = "Error: Unable to create " + nameFiles[i] + ". " + e.getMessage();
+                System.out.println(result);
             }
         }
-        return "";
+        return result;
     }
 
 
@@ -171,7 +179,7 @@ public class CMD {
     private String rm() {
         String[] nameFiles = command.split(" ");
         if (!isValidCommand(nameFiles)) {
-            return "";
+            return result;
         }
         boolean is_rmr = false;
         int i = 1;
@@ -187,26 +195,32 @@ public class CMD {
                     if (file.isDirectory()) {
                         if (is_rmr) {
                             removeDirectory(file);
-                            System.out.println("Directory and its contents removed successfully: " + nameFiles[i]);
+                            result = "Directory and its contents removed successfully: " + nameFiles[i];
+                            System.out.println(result);
                         } else {
-                            System.out.println("cannot remove : " + nameFiles[i] + " Is a directory");
+                            result = "cannot remove : " + nameFiles[i] + " Is a directory";
+                            System.out.println(result);
                         }
                     } else {
 
                         if (file.delete()) {
-                            System.out.println("File removed successfully: " + nameFiles[i]);
+                            result = "File removed successfully: " + nameFiles[i];
+                            System.out.println(result);
                         } else {
-                            System.out.println("Error: Unable to remove file: " + nameFiles[i]);
+                            result = "Error: Unable to remove file: " + nameFiles[i];
+                            System.out.println(result);
                         }
                     }
                 } else {
-                    System.out.println("Error: " + nameFiles[i] + " does not exist.");
+                    result = "Error: " + nameFiles[i] + " does not exist.";
+                    System.out.println(result);
                 }
             } catch (Exception e) {
-                System.out.println("Error: Unable to remove " + nameFiles[i] + ". " + e.getMessage());
+                result = "Error: Unable to remove " + nameFiles[i] + ". " + e.getMessage();
+                System.out.println(result);
             }
         }
-        return "";
+        return result;
     }
 
 

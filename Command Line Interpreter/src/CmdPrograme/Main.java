@@ -1,3 +1,5 @@
+package CmdPrograme;
+
 import java.util.Scanner;
 
 public class Main {
@@ -8,7 +10,7 @@ public class Main {
             while (true) {
                 System.out.print("Enter command or 'quit' to exit: ");
                 Command = input.nextLine();
-                System.out.println(Cmd.execute(Command));
+                Cmd.execute(Command);
                 if (Command.equals("quit")) {
                     input.close();
                     break;
