@@ -1,4 +1,5 @@
-import java.util.Scanner;
+//import java.util.Scanner;
+
 import java.io.File;
 
 public class CMD {
@@ -10,41 +11,40 @@ public class CMD {
 
     String execute(String command) {
         setCommand(command);
-        switch (command) {
-            case "mkdir":
-                return mkdir();
-            case "rmdir":
-                return rmdir();
-            case "touch":
-                return touch();
-            case "mv":
-                return mv();
-            case "rm":
-                return rm();
-            case "cat":
-                return cat();
-            case ">":
-                return writeFile();
-            case ">>":
-                return appendFile();
-            case "|":
-                return pipe();
-            case "pwd":
-                return pwd();
-            case "cd":
-                return cd();
-            case "ls":
-                return ls();
-            case "ls -a":
-                return lsa();
-            case "ls -r":
-                return lsr();
-            case "help":
-                return help();
-            case "quit":
-                return "Exiting...";
-            default:
-                return "Unknown command";
+        if (command.contains("mkdir")) {
+            return mkdir();
+        } else if (command.contains("rmdir")) {
+            return rmdir();
+        } else if (command.equals("touch")) {
+            return touch();
+        } else if (command.equals("mv")) {
+            return mv();
+        } else if (command.equals("rm")) {
+            return rm();
+        } else if (command.equals("cat")) {
+            return cat();
+        } else if (command.equals(">")) {
+            return writeFile();
+        } else if (command.equals(">>")) {
+            return appendFile();
+        } else if (command.equals("|")) {
+            return pipe();
+        } else if (command.equals("pwd")) {
+            return pwd();
+        } else if (command.equals("cd")) {
+            return cd();
+        } else if (command.equals("ls")) {
+            return ls();
+        } else if (command.equals("ls -a")) {
+            return lsa();
+        } else if (command.equals("ls -r")) {
+            return lsr();
+        } else if (command.equals("help")) {
+            return help();
+        } else if (command.equals("quit")) {
+            return "Exiting...";
+        } else {
+            return "Unknown command";
         }
 
     }
@@ -66,20 +66,43 @@ public class CMD {
     }
 
     private String mkdir() {
-        System.out.println("Enter Name Folder : ");
-        Scanner scanner = new Scanner(System.in);
-        String name = scanner.nextLine();
-
-        File folder = new File(name);
-
-        if (folder.mkdir()) {
-            System.out.println("Folder created successfully.");
-        } else {
-            System.out.println("The folder failed to be created or already exists.");
+        if (command.length() <= 6) {
+            return "Error: Command is not complete, please enter a folder name at next time.";
         }
-        scanner.close();
-        return "Directory created successfully.";
-    }
+        String[] nameFolder = command.split(" ");
+        for (int i = 1; i < nameFolder.length; i++) {
+            String nestedFolder,fatherFolder;
+
+            if (nameFolder[i].contains("/")) {
+                nestedFolder = nameFolder[i].substring(nameFolder[i].lastIndexOf("/") + 1);
+                fatherFolder = nameFolder[i].substring(0, nameFolder[i].lastIndexOf("/"));
+                File folder = new File(fatherFolder);
+
+                if (folder.exists() && folder.isDirectory()) {
+                    folder = new File(fatherFolder,nestedFolder);
+                    if (!folder.mkdirs()) {
+                        System.out.println("The folder failed to be created or already exists.");
+                    } else {
+                        System.out.println("Directory created successfully.");
+                    }
+                }
+                else {
+                    System.out.println("The Father Folder does not exist.");
+                }
+
+            } else {
+                File folder = new File(nameFolder[i]);
+
+                if (!folder.mkdir()) {
+                    System.out.println("The folder failed to be created or already exists.");
+                }
+                else {
+                    System.out.println("Directory created successfully.");
+                }
+            }
+        }
+            return "";
+        }
 
     private String rmdir() {
         return "Directory removed successfully.";
