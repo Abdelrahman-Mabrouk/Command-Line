@@ -1,6 +1,8 @@
 package CmdPrograme;//import java.util.Scanner;
+
 import java.io.File;
 import java.io.IOException;
+
 public class CMD {
     private String command;
     private String result;
@@ -31,7 +33,7 @@ public class CMD {
         directory.delete();
     }
 
-   public String execute(String command) {
+    public String execute(String command) {
         setCommand(command);
         if (command.contains("mkdir")) {
             return mkdir();
@@ -64,9 +66,13 @@ public class CMD {
         } else if (command.equals("help")) {
             return help();
         } else if (command.equals("quit")) {
-            return "Exiting...";
+            result = "Exiting...";
+            System.out.println(result);
+            return result;
         } else {
-            return "Unknown command";
+            result = "Error: Unknown command: " + command;
+            System.out.println(result);
+            return result;
         }
 
     }
@@ -106,12 +112,13 @@ public class CMD {
                         result = "Directory created successfully: " + nameFolders[i];
                         System.out.println(result);
                     } else {
-                        result = "Error: Unable to create directory " + nameFolders[i];
+                        result = "Error: Unable to create directory or name is invalid : " + nameFolders[i];
                         System.out.println(result);
                     }
+
                 }
             } catch (Exception e) {
-                result = "Error: An unexpected error occurred while creating directory " + nameFolders[i];
+                result = "Error: An unexpected error occurred while creating directory " + nameFolders[i] + e.getMessage();
                 return result;
             }
         }
@@ -160,7 +167,7 @@ public class CMD {
                     result = "File created successfully: " + nameFiles[i];
                     System.out.println(result);
                 } else {
-                    result = "File "+ nameFiles[i] +" already exists.";
+                    result = "File " + nameFiles[i] + " already exists.";
                     System.out.println(result);
                 }
             } catch (IOException e) {
