@@ -1,13 +1,12 @@
 package TestCommandFun;
 
-import CmdPrograme.*;
+import CmdPrograme.CMD;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RmCommandTest {
     CMD cliCommands = new CMD();
 
-    // اختبارات لحذف الملفات
     @Test
     public void testRemoveExistingFile() {
         String result = cliCommands.execute("rm TestFolder/ExistingFile.txt");
