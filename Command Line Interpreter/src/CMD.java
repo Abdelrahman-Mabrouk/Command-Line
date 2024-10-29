@@ -1,12 +1,13 @@
 //import java.util.Scanner;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CMD {
     private String command;
 
     private void setCommand(String c) {
-        command = c;
+        command = c.replaceFirst("^\\s+", "");
     }
 
     String execute(String command) {
@@ -15,9 +16,9 @@ public class CMD {
             return mkdir();
         } else if (command.contains("rmdir")) {
             return rmdir();
-        } else if (command.equals("touch")) {
+        } else if (command.contains("touch")) {
             return touch();
-        } else if (command.equals("mv")) {
+        } else if (command.contains("mv")) {
             return mv();
         } else if (command.equals("rm")) {
             return rm();
@@ -66,55 +67,82 @@ public class CMD {
     }
 
     private String mkdir() {
-       command =  command.replaceFirst("^\\s+", "");
         if (command.length() <= 6) {
-            return "Error: Command is not complete, please enter a folder name at next time.";
+            return "Error: Command is not complete, please enter a folder name next time.";
         }
-        String[] nameFolder = command.split(" ");
-        if (nameFolder.length > 1) {
-            for (int i = 1; i < nameFolder.length; i++) {
-                String nestedFolder, fatherFolder;
 
-                if (nameFolder[i].contains("/")) {
-                    nestedFolder = nameFolder[i].substring(nameFolder[i].lastIndexOf("/") + 1);
-                    fatherFolder = nameFolder[i].substring(0, nameFolder[i].lastIndexOf("/"));
-                    File folder = new File(fatherFolder);
+        String[] nameFolders = command.split(" ");
+        if (nameFolders.length > 1) {
+            for (int i = 1; i < nameFolders.length; i++) {
+                File folder = new File(nameFolders[i]);
 
-                    if (folder.exists() && folder.isDirectory()) {
-                        folder = new File(fatherFolder, nestedFolder);
-                        if (!folder.mkdirs()) {
-                            System.out.println("The folder failed to be created or already exists.");
+                try {
+                    if (folder.exists()) {
+                        return "Folder already exists: " + nameFolders[i];
+                    } else {
+
+                        if (folder.mkdir()) {
+                            System.out.println("Directory created successfully: " + nameFolders[i]);
                         } else {
-                            System.out.println("Directory created successfully.");
+                            System.out.println("Error: Unable to create directory " + nameFolders[i]);
                         }
-                    } else {
-                        System.out.println("The Father Folder does not exist.");
                     }
-
-                } else {
-                    File folder = new File(nameFolder[i]);
-
-                    if (!folder.mkdir()) {
-                        System.out.println("The folder failed to be created or already exists.");
-                    } else {
-                        System.out.println("Directory created successfully.");
-                    }
+                } catch (Exception e) {
+                    // لمعالجة الأخطاء العامة
+                    return "Error: An unexpected error occurred while creating directory " + nameFolders[i];
                 }
             }
-        }
-        else {
+        }else {
             System.out.println("Error: Command is not complete, please enter a folder name at next time.");
         }
-            return "";
-        }
+        return "";
+    }
 
     private String rmdir() {
-        return "Directory removed successfully.";
+        if (command.length() <= 6) {
+            return "Error: Command is not complete, please enter a folder name next time.";
+        }
+
+        String[] nameFolder = command.split(" ");
+        for (int i = 1; i < nameFolder.length; i++) {
+            File folder = new File(nameFolder[i]);
+
+            if (folder.exists() && folder.isDirectory()) {
+
+                if (folder.delete()) {
+                    System.out.println("Directory removed successfully : "+ nameFolder[i]);
+                } else {
+                    System.out.println("Error: The directory "+ nameFolder[i] + " could not be removed. It may not be empty or you don't have permission.");
+                }
+            } else {
+                System.out.println("Error: Directory does not exist : "+ nameFolder[i]);
+            }
+        }
+        return "";
     }
 
+
     private String touch() {
-        return "File created successfully.";
+        if (command.length() <= 6) {
+            return "Error: Command is not complete, please enter a file name next time.";
+        }
+
+        String[] nameFile = command.split(" ");
+        for (int i = 1; i < nameFile.length; i++) {
+            File file = new File(nameFile[i]);
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File created successfully: " + nameFile[i]);
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch ( IOException e) {
+                System.out.println("Error: Unable to create " + nameFile[i] + ". " + e.getMessage());
+            }
+        }
+        return "";
     }
+
 
     private String mv() {
         return "Moved successfully.";
