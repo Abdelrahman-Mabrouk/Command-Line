@@ -11,8 +11,9 @@ public class CMD {
         command = c.replaceFirst("^\\s+", "");
     }
 
-    private boolean isValidCommand(String[] nameFolders) {
-        if (nameFolders.length > 1) {
+    private boolean isValidCommand(String[] nameFolders, String command) {
+
+        if (nameFolders.length > 1 && nameFolders[0].equals(command)) {
             return true;
         }
         result = "Error: Command is not complete, please enter a folder or file name at next time.";
@@ -27,7 +28,12 @@ public class CMD {
                 if (file.isDirectory()) {
                     removeDirectory(file);
                 }
-                file.delete();
+                if (!file.canWrite()) {
+                    result = "Error: Unable to remove " + file.getName() + ". Permission denied.";
+                    System.out.println(result);
+                }else {
+                    file.delete();
+                }
             }
         }
         directory.delete();
@@ -95,7 +101,7 @@ public class CMD {
 
     private String mkdir() {
         String[] nameFolders = command.split(" ");
-        if (!isValidCommand(nameFolders)) {
+        if (!isValidCommand(nameFolders, "mkdir")) {
             return result;
         }
 
@@ -128,7 +134,7 @@ public class CMD {
 
     private String rmdir() {
         String[] nameFolders = command.split(" ");
-        if (!isValidCommand(nameFolders)) {
+        if (!isValidCommand(nameFolders, "rmdir")) {
             return result;
         }
 
@@ -156,9 +162,10 @@ public class CMD {
     private String touch() {
 
         String[] nameFiles = command.split(" ");
-        if (!isValidCommand(nameFiles)) {
+        if (!isValidCommand(nameFiles, "touch")) {
             return result;
         }
+
 
         for (int i = 1; i < nameFiles.length; i++) {
             File file = new File(nameFiles[i]);
@@ -185,15 +192,21 @@ public class CMD {
 
     private String rm() {
         String[] nameFiles = command.split(" ");
-        if (!isValidCommand(nameFiles)) {
+        if (!isValidCommand(nameFiles, "rm")) {
             return result;
         }
         boolean is_rmr = false;
+        boolean is_forceDelete = false;
         int i = 1;
+
         if (nameFiles[1].equals("-r")) {
             is_rmr = true;
             i++;
+        } else if (nameFiles[1].equals("-f") || nameFiles[1].equals("--force")) {
+            is_forceDelete = true;
+            i++;
         }
+
 
         for (; i < nameFiles.length; i++) {
             File file = new File(nameFiles[i]);
@@ -201,27 +214,34 @@ public class CMD {
                 if (file.exists()) {
                     if (file.isDirectory()) {
                         if (is_rmr) {
-                            removeDirectory(file);
-                            result = "Directory and its contents removed successfully: " + nameFiles[i];
-                            System.out.println(result);
-                        } else {
+                                removeDirectory(file);
+                                result = "Directory and its contents removed successfully: " + nameFiles[i];
+                                System.out.println(result);
+
+                        }  else {
                             result = "cannot remove : " + nameFiles[i] + " Is a directory";
                             System.out.println(result);
                         }
                     } else {
-
-                        if (file.delete()) {
-                            result = "File removed successfully: " + nameFiles[i];
+                        if (!is_forceDelete && !file.canWrite()) {
+                            result = "Error: Unable to remove " + nameFiles[i] + ". Permission denied.";
                             System.out.println(result);
                         } else {
-                            result = "Error: Unable to remove file: " + nameFiles[i];
-                            System.out.println(result);
+
+                            if (file.delete()) {
+                                result = "File removed successfully: " + nameFiles[i];
+                                System.out.println(result);
+                            } else {
+                                result = "Error: Unable to remove file: " + nameFiles[i];
+                                System.out.println(result);
+                            }
                         }
                     }
                 } else {
                     result = "Error: " + nameFiles[i] + " does not exist.";
                     System.out.println(result);
                 }
+
             } catch (Exception e) {
                 result = "Error: Unable to remove " + nameFiles[i] + ". " + e.getMessage();
                 System.out.println(result);
