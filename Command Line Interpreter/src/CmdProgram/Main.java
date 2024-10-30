@@ -1,5 +1,6 @@
-package CmdPrograme;
 
+
+package CmdProgram;
 import java.util.Scanner;
 
 public class Main {
