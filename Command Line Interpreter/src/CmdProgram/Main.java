@@ -1,5 +1,3 @@
-
-
 package CmdProgram;
 import java.util.Scanner;
 
@@ -9,7 +7,9 @@ public class Main {
         String Command;
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
-                System.out.print("Enter command or 'quit' to exit: ");
+                String currentDir = System.getProperty("user.dir").replace("\\", "/");
+                String prompt = String.format("root@hostname ~%s $ ", currentDir);
+                System.out.print(prompt);
                 Command = input.nextLine();
                 Cmd.execute(Command);
                 if (Command.equals("quit")) {

@@ -1,5 +1,14 @@
 package CmdProgram;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 
 public class CMD {
     private String command, result;
@@ -54,50 +63,181 @@ public class CMD {
             return mv();
         } else if (command.contains("rm")) {
             return rm();
-        } else if (command.equals("cat")) {
+        } else if (command.contains("cat")) {
             return cat();
-        } else if (command.equals("pwd")) {
-            return pwd();
-        } else if (command.equals("cd")) {
+        } else if (command.contains("pwd")) {
+            pwd();
+            return "";
+        } else if (command.startsWith("cd")) {
             return cd();
-        } else if (command.equals("ls")) {
-            return ls();
-        } else if (command.equals("ls -a")) {
+        } else if (command.startsWith("ls -a")) {
             return lsa();
-        } else if (command.equals("ls -r")) {
+        }else if (command.startsWith("ls -r")) {
             return lsr();
-        } else if (command.equals("help")) {
+        } else if (command.startsWith("ls")) {
+            return ls();
+        }  else if (command.equals("help")) {
             return help();
         } else if (command.equals("quit")) {
             result = "Exiting...";
             System.out.println(result);
             return result;
-        } else {
+        }else {
             result = "Error: Unknown command: " + command;
             System.out.println(result);
             return result;
         }
 
     }
+    private Path currentDirectory = Paths.get(System.getProperty("user.dir"));  // Start in user's working directory
 
-    private String lsr() {
-        return "Listing files.";
-    }
+    private String cd() {
+        String[] parts = command.split(" ",2);
+        if (!isValidCommand(parts, "cd") || parts.length < 2) {
+            return "Error: No directory specified for cd command.";
+        }
+        Path newDir = currentDirectory.resolve(parts[1].trim()).normalize();
+        if (Files.isDirectory(newDir)) {
+            currentDirectory = newDir;
+            result= "Changed directory to: " + currentDirectory.toString();
 
-    private String lsa() {
-        return "Listing files.";
+        } else {
+            result= "Error: Directory does not exist: " + parts[1];
+        }
+        System.out.println(result);
+        return result;
     }
 
     private String pwd() {
-        return "user.dir";
+        System.out.println( currentDirectory.toString());
+        return currentDirectory.toString();
+    }
+    private String ls() {
+        String[] parts = command.split(" ", 2);
+
+        Path directory;
+        if (parts.length == 2) {
+            directory = currentDirectory.resolve(parts[1].trim()).normalize();// directory b2a el7ta eltania
+            if (!Files.isDirectory(directory)) {
+                result = "Error: The specified path is not a directory.";
+                System.out.println(result);
+                return result;
+            }
+
+        } else {
+            directory = currentDirectory; // Default to current directory if no directory is specified
+        }
+
+        try {
+
+            List<String> files = Files.list(directory)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> !name.startsWith(".")) // Exclude hidden files
+                    .collect(Collectors.toList());
+            result = String.join("\n", files);
+        } catch (IOException e) {
+            result = "Error: Unable to list directory contents.";
+        }
+        System.out.println(result);
+        return result;
+    }
+    private String lsr() {
+        String[] parts = command.split(" ", 3);
+
+        Path directory;
+        if (parts.length == 3) {
+            directory = currentDirectory.resolve(parts[2].trim()).normalize();// directory b2a el7ta eltania
+            if (!Files.isDirectory(directory)) {
+                result = "Error: The specified path is not a directory.";
+                System.out.println(result);
+                return result;
+            }
+
+        } else {
+            directory = currentDirectory; // Default to current directory if no directory is specified
+        }
+        try {
+            Collections Comparator = null;
+            List<String> files = Files.list(directory)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> !name.startsWith(".")) // Exclude hidden files
+                    .sorted(Collections.reverseOrder())  // Sort in reverse alphabetical order
+                    .collect(Collectors.toList());
+
+            result = String.join("\n", files);
+        } catch (IOException e) {
+            result = "Error: Unable to list directory contents in reverse.";
+        }
+        System.out.println(result);
+        return result;
+    }
+    private String lsa() {
+        String[] parts = command.split(" ", 3);
+
+        Path directory;
+        if (parts.length == 3) {
+            directory = currentDirectory.resolve(parts[2].trim()).normalize();// directory b2a el7ta eltania
+            if (!Files.isDirectory(directory)) {
+                result = "Error: The specified path is not a directory.";
+                System.out.println(result);
+                return result;
+            }
+
+        } else {
+            directory = currentDirectory; // Default to current directory if no directory is specified
+        }
+        try {
+            List<String> files = Files.list(directory)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .sorted()
+                    .collect(Collectors.toList());
+            result = String.join("\n", files);
+        } catch (IOException e) {
+            result = "Error: Unable to list all files, including hidden.";
+        }
+        System.out.println(result);
+        return result;
     }
 
-    private String cd() {
-        return "Changed directory to: ";
-    }
 
     private String mv() {
-        return "Moved successfully.";
+        String[] args = command.split(" ");
+        if (!isValidCommand(args, "mv") || args.length < 3) {
+            result = "Error: mv command requires a source and a destination.";
+            System.out.println(result);
+            return result;
+        }
+
+        File sourceFile = new File(System.getProperty("user.dir"), args[1]);
+        File destination = new File(System.getProperty("user.dir"), args[2]);
+
+        if (!sourceFile.exists()) {
+            result = "Error: Source file does not exist: " + sourceFile.getPath();
+            System.out.println(result);
+            return result;
+        }
+
+        if (destination.isDirectory()) {
+            File newFile = new File(destination, sourceFile.getName());
+            boolean success = sourceFile.renameTo(newFile);
+            if (success) {
+                System.out.println("Moved: " + sourceFile.getName() + " to " + newFile.getPath());
+            } else {
+                System.out.println("Failed to move: " + sourceFile.getName());
+            }
+        } else {
+            boolean success = sourceFile.renameTo(destination);
+            if (success) {
+                System.out.println("Moved: " + sourceFile.getName() + " to " + destination.getPath());
+            } else {
+                System.out.println("Failed to move: " + sourceFile.getName());
+            }
+        }
+        result = "Successfully moved: " + sourceFile.getName();
+        return result;
     }
 
     // Mabrouk's work starts from here :)
@@ -244,7 +384,6 @@ public class CMD {
     }
     // Mabrouk's work ends from here :)
 
-
     // Ahmad's work starts here :)
     private String writeFile() {
         String[] parts = command.split(" > ", 2);
@@ -261,7 +400,7 @@ public class CMD {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
-        return "File written.";
+        return "Writing process successful.";
     }
 
     private String appendFile() {
@@ -272,17 +411,11 @@ public class CMD {
         String content = parts[0].trim();
         String fileName = parts[1].trim();
         File file = new File(fileName);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();  // Create the file if it doesn't exist
-            } catch (IOException e) {
-                return "Error creating file: " + e.getMessage();
-            }
-        }
         try (FileWriter writer = new FileWriter(file, true)) {
             writer.write(content);
-            writer.write(System.lineSeparator());  // Optional: Add a new line after the content
-            return "File appended successfully.";
+            writer.write(System.lineSeparator()); // Add a new line after the content for confirmation
+            System.out.println("Content appended successfully.");
+            return "Content appended successfully.";
         } catch (IOException e) {
             System.out.println("Error appending to file: " + e.getMessage());
             return "Error appending to file: " + e.getMessage();
@@ -291,33 +424,80 @@ public class CMD {
 
     private String pipe() {
         String[] commands = command.split("\\|");
-        String previousOutput = ""; 
+        String previousOutput = "";
         for (String cmd : commands) {
             String currentCommand = cmd.trim(), output = execute(currentCommand);
             if (commands.length > 1) {
-                if (!output.startsWith("Error:")) { 
-                    previousOutput += output + System.lineSeparator(); 
+                if (!output.startsWith("Error:")) {
+                    previousOutput += output + System.lineSeparator();
                 } else {
-                    return output; 
+                    System.out.println(output);
+                    return output;
                 }
             } else {
-                return output; 
+                System.out.println(output);
+                return output;
             }
         }
-        return previousOutput; 
+        System.out.println(previousOutput);
+        return previousOutput;
     }
     // Ahmad's work ends here :)
 
-    private String ls() {
-        return "Listing files.";
-    }
 
     private String help() {
+        System.out.println("Available commands:");
+        System.out.println("pwd - Print working directory");
+        System.out.println("cd <directory> - Change directory");
+        System.out.println("ls - List files in directory");
+        System.out.println("ls -a - List all files, including hidden");
+        System.out.println("ls -r - List files in reverse order");
+        System.out.println("mkdir <directory> - Create a new directory");
+        System.out.println("rmdir <directory> - Remove a directory");
+        System.out.println("touch <file> - Create a new file");
+        System.out.println("mv <source> <destination> - Move or rename a file");
+        System.out.println("rm <file> - Remove a file");
+        System.out.println("cat <file> - Display file content");
+        System.out.println("quit - Terminate the CLI");
+        System.out.println("help - Display this help information");
+        System.out.println("> and >> - Redirect output to a file");
+        System.out.println("| - Pipe output to another command");
         return "Available commands: ";
     }
 
     private String cat() {
-        return "Displaying file contents.";
+        String[] args = command.split(" ");
+        if (!isValidCommand(args, "cat") || args.length < 2) {
+            result = "Error: cat command requires a file name.";
+            System.out.println(result);
+            return result;
+        }
+
+        File file = new File(args[1]);
+
+        // Check if the file exists
+        if (!file.exists()) {
+            result = "Error: File does not exist: " + file.getPath();
+            System.out.println(result);
+            return result;
+        }
+
+        // Read and print the file contents
+        StringBuilder fileContent = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                fileContent.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            result = "Error reading file: " + e.getMessage();
+            System.out.println(result);
+            return result;
+        }
+
+        // Print the contents of the file
+        System.out.println(fileContent.toString());
+        return fileContent.toString();
     }
 
 }
